@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://cge5k8nbwidn4"]
+
+[ext_resource type="Script" uid="uid://b1vav62gq723y" path="res://level_manager.gd" id="1_f3sb7"]
+[ext_resource type="Script" uid="uid://3gwlwl4v4cjl" path="res://world.gd" id="1_tlwt5"]
+[ext_resource type="Script" uid="uid://c1fcohrak1vxm" path="res://player.gd" id="2_fj7yv"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gv5m4"]
+
+[node name="World" type="Node" unique_id=719320249]
+script = ExtResource("1_tlwt5")
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=124107453]
+script = ExtResource("2_fj7yv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1803452719]
+shape = SubResource("CircleShape2D_gv5m4")
+
+[node name="RayCast2D" type="RayCast2D" parent="Player" unique_id=287979128]
+target_position = Vector2(15, 0)
+
+[node name="LevelManager" type="Node" parent="." unique_id=448302368]
+script = ExtResource("1_f3sb7")
+levels_dir = "res://Levels/"

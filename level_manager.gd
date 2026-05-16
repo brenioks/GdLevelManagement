@@ -5,7 +5,7 @@ extends Node
 @export var levels_dir: String = "res://"
 
 var level_list: Array[PackedScene]
-var current_level_index: int = 0
+var current_level_number: int = -1
 var current_level_node: Node
 
 signal level_loaded(level_number: String)
@@ -24,14 +24,12 @@ func _ready() -> void:
 		levels_dir += "/"
 	
 	# Cachear níveis numa array
-	var scene_files = ResourceLoader.list_directory(levels_dir)
+	var scene_files: Array = Array(ResourceLoader.list_directory(levels_dir))
+	scene_files = scene_files.filter(file_is_level)	# Filtrar apenas níveis (cenas numeradas)
+	level_list.resize(scene_files.size())	# Definir o tamanho da lista de niveis direto
 	for scene_name in scene_files:
-		# Pular não-níveis (não-cenas)
-		if not scene_name.ends_with(".tscn"): continue
 		var level_number = scene_name.to_int()
-		
-		level_list.resize(level_number + 1)
-		level_list[level_number] = load(levels_dir + scene_name)
+		level_list[level_number - 1] = load(levels_dir + scene_name)
 	
 	# Limpar qualquer coisa que estiver nesse node por algum motivo
 	for child in get_children():
@@ -40,9 +38,17 @@ func _ready() -> void:
 	start_level(start_level_number)
 	level_ended.connect(_on_level_ended)
 
+func file_is_level(file_name: String):
+	var regex = RegEx.create_from_string("[0-9]")
+	var has_numbers = regex.search(file_name) != null
+	
+	return file_name.ends_with(".tscn") and has_numbers
+
 func start_level(level_number: int) -> void:
-	var levelScene = level_list.get(level_number)
-	if not levelScene:
+	# Index começa de 0, Number de 1
+	var level_index = level_number - 1
+	var level_scene = level_list.get(level_index)
+	if not level_scene:
 		printerr("Level %s not recognized" % level_number)
 		return
 	
@@ -51,9 +57,9 @@ func start_level(level_number: int) -> void:
 		current_level_node.queue_free()
 	
 	# Load new level
-	var level_node = levelScene.instantiate()
+	var level_node = level_scene.instantiate()
 	call_deferred("add_child", level_node)
-	current_level_index = level_number
+	current_level_number = level_number
 	current_level_node = level_node
 	
 	World.player.velocity = Vector2.ZERO
@@ -62,4 +68,4 @@ func start_level(level_number: int) -> void:
 
 
 func _on_level_ended():
-	start_level(current_level_index + 1)
+	start_level(current_level_number + 1)

@@ -18,21 +18,25 @@ func _ready() -> void:
 		get_tree().quit()
 		breakpoint
 		return
-
-	# Cache levels in array
+	
+	# Consertar caminho pra ser um diretório
+	if not levels_dir.ends_with("/"):
+		levels_dir += "/"
+	
+	# Cachear níveis numa array
 	var scene_files = ResourceLoader.list_directory(levels_dir)
 	for scene_name in scene_files:
-		# Skip non-levels
+		# Pular não-níveis (não-cenas)
 		if not scene_name.ends_with(".tscn"): continue
 		var level_number = scene_name.to_int()
-
+		
 		level_list.resize(level_number + 1)
 		level_list[level_number] = load(levels_dir + scene_name)
-
-	# Clear whatever gibberish that is inside this node
+	
+	# Limpar qualquer coisa que estiver nesse node por algum motivo
 	for child in get_children():
 		child.queue_free()
-
+	
 	start_level(start_level_number)
 	level_ended.connect(_on_level_ended)
 
@@ -41,17 +45,17 @@ func start_level(level_number: int) -> void:
 	if not levelScene:
 		printerr("Level %s not recognized" % level_number)
 		return
-
+	
 	# Unload last level
 	if current_level_node:
 		current_level_node.queue_free()
-
+	
 	# Load new level
 	var level_node = levelScene.instantiate()
 	call_deferred("add_child", level_node)
 	current_level_index = level_number
 	current_level_node = level_node
-
+	
 	World.player.velocity = Vector2.ZERO
 	await get_tree().create_timer(.1).timeout
 	level_loaded.emit()

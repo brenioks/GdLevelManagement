@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://kyym3jeevgs1"]
+
+[ext_resource type="Texture2D" uid="uid://x1ni4tv64fwi" path="res://icon.svg" id="1_gtdf4"]
+
+[sub_resource type="GDScript" id="GDScript_gtdf4"]
+resource_name = "godot_sorridente"
+script/source = "extends Sprite2D
+
+
+func _on_button_pressed() -> void:
+	World.finish_level()
+"
+
+[node name="Level01" type="Node2D" unique_id=171565592]
+
+[node name="Icon2" type="Sprite2D" parent="." unique_id=1358512385]
+position = Vector2(581.5, 507)
+scale = Vector2(4.2578125, 0.57812494)
+texture = ExtResource("1_gtdf4")
+
+[node name="Icon3" type="Sprite2D" parent="." unique_id=1441307236]
+position = Vector2(358.5, 104.5)
+scale = Vector2(4.4921875, 0.7578125)
+texture = ExtResource("1_gtdf4")
+
+[node name="Icon4" type="Sprite2D" parent="." unique_id=843750475]
+position = Vector2(992.00006, 299.00003)
+scale = Vector2(1.375, 3.9375)
+texture = ExtResource("1_gtdf4")
+
+[node name="GodotSorridente" type="Sprite2D" parent="." unique_id=185724860]
+position = Vector2(630, 299)
+texture = ExtResource("1_gtdf4")
+script = SubResource("GDScript_gtdf4")
+
+[node name="Polygon2D" type="Polygon2D" parent="GodotSorridente" unique_id=1916067851]
+position = Vector2(1, 2)
+color = Color(0.89059, 0.89059, 0.8905901, 1)
+polygon = PackedVector2Array(-47, -1, -1, 18, 41, 0, 32, 25, -1, 48, -33, 27)
+
+[node name="Button" type="Button" parent="GodotSorridente" unique_id=610332956]
+offset_left = -63.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 65.0
+flat = true
+
+[node name="Label" type="Label" parent="." unique_id=1655004836]
+offset_left = 147.0
+offset_top = 235.0
+offset_right = 224.0
+offset_bottom = 258.0
+scale = Vector2(1.7162648, 1.3532768)
+text = "Level Uno"
+
+[connection signal="pressed" from="GodotSorridente/Button" to="GodotSorridente" method="_on_button_pressed"]

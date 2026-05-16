@@ -8,7 +8,7 @@ script/source = "extends Sprite2D
 
 
 func _on_button_pressed() -> void:
-	World.finish_level()
+	World.goto_next_level()
 "
 
 [node name="Level01" type="Node2D" unique_id=171565592]

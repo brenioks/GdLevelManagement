@@ -14,5 +14,5 @@ func _ready() -> void:
 
 
 # Funções estáticas devem ser usadas com World direto, não World.instance
-static func finish_level() -> void:
+static func goto_next_level() -> void:
 	World.instance.level_manager.level_ended.emit()

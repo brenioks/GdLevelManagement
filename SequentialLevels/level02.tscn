@@ -9,7 +9,7 @@ script/source = "extends Node2D
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
-		World.finish_level()
+		World.goto_next_level()
 "
 
 [node name="Level02" type="Node2D" unique_id=1896392317]

@@ -62,8 +62,7 @@ func start_level(level_number: int) -> void:
 	current_level_number = level_number
 	current_level_node = level_node
 	
-	World.player.velocity = Vector2.ZERO
-	await get_tree().create_timer(.1).timeout
+	await level_node.ready
 	level_loaded.emit()
 
 

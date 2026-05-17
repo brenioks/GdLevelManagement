@@ -55,25 +55,21 @@ func begin_level(level: Variant) -> void:
 	if level is StringName:
 		level_index = levelname_list.find(level)
 		if level_index == -1:
-			var stack = get_stack()
-			var caller = stack[2]
-			printerr("Level '%s' not recognized (%s, line: %d)" % [level, caller.source.get_file(), caller.line])
+			_print_error("Level '%s' not recognized from directory '%s'" % [level, levels_dir])
 			return
 	# Mas também o indice do nível
 	elif level is int:
 		level_index = level
 	# Tipo de nível desconhecido (!int && !StringName)
 	else:
-		var stack = get_stack()
-		var caller = stack[2]
-		printerr("Level type '%s' not recognized (%s, line: %d)" % [type_string(typeof(level)), caller.source.get_file(), caller.line])
+		_print_error("Level type '%s' should be 'int' or 'StringName'" % type_string(typeof(level)))
 		return
 	
 	# Iniciar nível de verdadde
 	
 	var level_scene = level_list.get(level_index)
 	if not level_scene:
-		printerr("Level %s not recognized" % level)
+		_print_error("Level %s not recognized" % level)
 		return
 	
 	# Descarregar nível anterior
@@ -89,6 +85,14 @@ func begin_level(level: Variant) -> void:
 	await level_node.ready
 	var level_name = levelname_list[level_index]
 	level_loaded.emit(level_name)
+
+func _print_error(message: String):
+	var stack = get_stack()
+	var caller = stack[2]
+	if stack.size() == 4:
+		caller = stack[3]
+	var line_code = FileAccess.get_file_as_string(caller.source).split("\n")[caller.line-1].strip_edges()
+	printerr(message + "\n at %s:%s() (line %d) -    %s" % [caller.source.get_file(), caller.function, caller.line, line_code])
 
 
 func _on_level_ended() -> void:

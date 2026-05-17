@@ -21,3 +21,4 @@ target_position = Vector2(15, 0)
 [node name="LevelManager" type="Node" parent="." unique_id=448302368]
 script = ExtResource("3_tlwt5")
 start_level = &"level01"
+levels_dir = "res://Levels"

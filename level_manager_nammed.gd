@@ -1,67 +1,45 @@
-extends Node
+extends SeqLevelManager
 
-@export var start_level: StringName
-@export_group("References")
-@export var levels_dir: String = "res://"
-
-var level_list: Dictionary[StringName, PackedScene]
+var levelname_list: Array[String]
 var current_level_name: StringName
-var current_level_node: Node
-
-signal level_loaded(level_name: StringName)
-signal level_ended
-
-const _type: int = 0
 
 
-func _ready() -> void:
-	if not World.player:
-		push_error("LevelManager: reference to Player (from World) not found!")
-		get_tree().quit()
-		breakpoint
-		return
-	
-	# Cachear níveis num dicionário, para ser mais fácil de ler-los
-	var scene_files = ResourceLoader.list_directory(levels_dir)
+# Override
+func cache_levels() -> void:
+	var scene_files: Array = ResourceLoader.list_directory(levels_dir)
+	scene_files = scene_files.filter(file_is_level)
+	level_list.resize(scene_files.size())
+	levelname_list.resize(scene_files.size())
 	for i in range(scene_files.size()):
 		var scene_name: String = scene_files[i]
-		# Filtrar apenas níveis
-		if not file_is_level(levels_dir.path_join(scene_name)):
-			continue
-		# Adicionar nível no Cache (Ex.: { "cool_level" })
 		var level_name: StringName = scene_name.get_file().get_slice('.', 0)
-		level_list[level_name] = load(levels_dir.path_join(scene_name))
+		level_list[i] = load(levels_dir.path_join(scene_name))
+		levelname_list[i] = level_name
 	print(level_list)
-	
-	# Limpar qualquer coisa que estiver nesse node por algum motivo
-	for child in get_children():
-		child.queue_free()
-	
-	begin_level(start_level)
-	level_ended.connect(_on_level_ended)
+	print(levelname_list)
 
+# Override
 func file_is_level(file_path: String):
 	var file_name = file_path.get_file()
 	return file_name.ends_with(".tscn")
 
-func begin_level(level_name: StringName) -> void:
-	var level_scene = level_list.get(level_name)
-	if not level_scene:
-		printerr("Level '%s' not recognized" % level_name)
-		return
-	
-	# Unload last level
-	if current_level_node:
-		current_level_node.queue_free()
-	
-	# Load new level
-	var level_node = level_scene.instantiate()
-	call_deferred("add_child", level_node)
-	current_level_name = level_name
-	current_level_node = level_node
-	
-	await level_node.ready
-	level_loaded.emit(level_name)
+func begin_level(level: Variant) -> void:
+	# Ainda podemos usar os indice do nível
+	if level is int:
+		super.begin_level(level)
+	# Mas tambem podemos usar o nome do nível
+	elif level is StringName:
+		var level_index = levelname_list.find(level)
+		if level_index == -1:
+			var stack = get_stack()
+			var caller = stack[2]
+			printerr("Level '%s' not recognized (%s, line: %d)" % [level, caller.source.get_file(), caller.line])
+			return
+		super.begin_level(level_index + 1)
+	else:
+		var stack = get_stack()
+		var caller = stack[2]
+		printerr("Level type '%s' not recognized (%s, line: %d)" % [type_string(typeof(level)), caller.source.get_file(), caller.line])
 
 
 func _on_level_ended() -> void:

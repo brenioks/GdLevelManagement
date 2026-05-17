@@ -11,6 +11,8 @@ var current_level_node: Node
 signal level_loaded(level_number: String)
 signal level_ended
 
+const _type: int = 1
+
 
 func _ready() -> void:
 	if not World.player:
@@ -19,23 +21,19 @@ func _ready() -> void:
 		breakpoint
 		return
 	
-	# Consertar caminho pra ser um diretório
-	if not levels_dir.ends_with("/"):
-		levels_dir += "/"
-	
 	# Cachear níveis numa array
 	var scene_files: Array = Array(ResourceLoader.list_directory(levels_dir))
 	scene_files = scene_files.filter(file_is_level)	# Filtrar apenas níveis (cenas numeradas)
-	level_list.resize(scene_files.size())	# Definir o tamanho da lista de niveis direto
+	level_list.resize(scene_files.size())			# Definir o tamanho da lista de niveis direto
 	for scene_name in scene_files:
 		var level_number = scene_name.to_int()
-		level_list[level_number - 1] = load(levels_dir + scene_name)
+		level_list[level_number - 1] = load(levels_dir.path_join(scene_name))
 	
 	# Limpar qualquer coisa que estiver nesse node por algum motivo
 	for child in get_children():
 		child.queue_free()
 	
-	start_level(start_level_number)
+	begin_level(start_level_number)
 	level_ended.connect(_on_level_ended)
 
 func file_is_level(file_name: String):
@@ -44,7 +42,7 @@ func file_is_level(file_name: String):
 	
 	return file_name.ends_with(".tscn") and has_numbers
 
-func start_level(level_number: int) -> void:
+func begin_level(level_number: int) -> void:
 	# Index começa de 0, Number de 1
 	var level_index = level_number - 1
 	var level_scene = level_list.get(level_index)
@@ -63,8 +61,9 @@ func start_level(level_number: int) -> void:
 	current_level_node = level_node
 	
 	await level_node.ready
-	level_loaded.emit()
+	level_loaded.emit(level_number)
 
 
 func _on_level_ended():
-	start_level(current_level_number + 1)
+	# Começar próximo nível "automaticamente"
+	begin_level(current_level_number + 1)

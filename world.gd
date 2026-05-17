@@ -15,4 +15,14 @@ func _ready() -> void:
 
 # Funções estáticas devem ser usadas com World direto, não World.instance
 static func goto_next_level() -> void:
-	World.instance.level_manager.level_ended.emit()
+	var _level_manager = World.instance.level_manager
+	if _level_manager._type == 1:
+		_level_manager.level_ended.emit()
+	else:
+		print("No next level to go")
+
+static func begin_level(level) -> void:
+	var _level_manager = World.instance.level_manager
+	_level_manager.level_ended.emit()
+	# NOTE: Provavelmente fazer algo tipo uma transição aqui
+	_level_manager.begin_level(level)

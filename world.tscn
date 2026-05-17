@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cge5k8nbwidn4"]
 
-[ext_resource type="Script" uid="uid://b1vav62gq723y" path="res://level_manager.gd" id="1_f3sb7"]
+[ext_resource type="Script" uid="uid://cfhx05186862m" path="res://level_manager_nammed.gd" id="1_f3sb7"]
 [ext_resource type="Script" uid="uid://3gwlwl4v4cjl" path="res://world.gd" id="1_tlwt5"]
 [ext_resource type="Script" uid="uid://c1fcohrak1vxm" path="res://player.gd" id="2_fj7yv"]
 
@@ -20,4 +20,5 @@ target_position = Vector2(15, 0)
 
 [node name="LevelManager" type="Node" parent="." unique_id=448302368]
 script = ExtResource("1_f3sb7")
+start_level = &"level01"
 levels_dir = "res://SequentialLevels/"

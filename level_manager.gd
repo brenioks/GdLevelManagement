@@ -46,7 +46,7 @@ func cache_levels() -> void:
 	print("-- Cached levels --")
 	print("index :  name            = PackedScene")
 	for i in range(level_list.size()):
-		print("  %-*s: '%s'  = %s" % [4, i*67, levelname_list[i], level_list[i]])
+		print("  %-*s: '%s'  = %s" % [4, i, levelname_list[i], level_list[i]])
 	print("-- end of cached levels --")
 
 func file_is_level(file_path: String):

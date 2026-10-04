@@ -23,7 +23,7 @@ func _ready() -> void:
 	
 	cache_levels()
 	
-	# Limpar qualquer coisa que estiver nesse node por algum motivo
+	# Erase anything that is inside this node for some reason
 	for child in get_children():
 		child.queue_free()
 	
@@ -33,15 +33,21 @@ func _ready() -> void:
 func cache_levels() -> void:
 	var scene_files: Array = ResourceLoader.list_directory(levels_dir)
 	scene_files = scene_files.filter(file_is_level)
+	# Set the lists' sizes 
 	level_list.resize(scene_files.size())
 	levelname_list.resize(scene_files.size())
+	# Add level scenes and names to their respectiive lists, at the same index
 	for i in range(scene_files.size()):
 		var scene_name: String = scene_files[i]
 		var level_name: StringName = scene_name.get_file().get_slice('.', 0)
 		level_list[i] = load(levels_dir.path_join(scene_name))
 		levelname_list[i] = level_name
-	print(level_list)
-	print(levelname_list)
+	# Print a list of levels, showing their index, name and scene ( index  : 'name'  = PackedScene)
+	print("-- Cached levels --")
+	print("index :  name            = PackedScene")
+	for i in range(level_list.size()):
+		print("  %-*s: '%s'  = %s" % [4, i*67, levelname_list[i], level_list[i]])
+	print("-- end of cached levels --")
 
 func file_is_level(file_path: String):
 	var file_name = file_path.get_file()
@@ -92,7 +98,7 @@ func _print_error(message: String):
 	if stack.size() == 4:
 		caller = stack[3]
 	var line_code = FileAccess.get_file_as_string(caller.source).split("\n")[caller.line-1].strip_edges()
-	printerr(message + "\n at %s:%s() (line %d) -    %s" % [caller.source.get_file(), caller.function, caller.line, line_code])
+	printerr(message + "\n At: %s:%d:%s() -    %s" % [caller.source.get_file(), caller.line, caller.function, line_code])
 
 
 func _on_level_ended() -> void:

@@ -22,7 +22,7 @@ func _ready() -> void:
 		breakpoint
 		return
 	
-	cache_levels()
+	_setup_level_lists()
 	
 	# Erase anything that is inside this node for some reason
 	for child in get_children():
@@ -31,7 +31,7 @@ func _ready() -> void:
 	begin_level(start_level)
 	level_ended.connect(_on_level_ended)
 
-func cache_levels() -> void:
+func _setup_level_lists() -> void:
 	var scene_files: Array = ResourceLoader.list_directory(levels_dir)
 	scene_files = scene_files.filter(file_is_level)
 	# Set the lists' sizes 
@@ -41,7 +41,6 @@ func cache_levels() -> void:
 	for i in range(scene_files.size()):
 		var scene_name: String = scene_files[i]
 		var level_name: StringName = scene_name.get_file().get_slice('.', 0)
-		level_list[i] = load(levels_dir.path_join(scene_name))
 		levelname_list[i] = level_name
 	# Print a list of levels, showing their index, name and scene ( index  : 'name'  = PackedScene)
 	print("-- Cached levels --")
@@ -50,11 +49,18 @@ func cache_levels() -> void:
 		print("  %-*s: '%s'  = %s" % [4, i, levelname_list[i], level_list[i]])
 	print("-- end of cached levels --")
 
-func file_is_level(file_path: String):
+func is_level_loaded(level_index: int) -> bool:
+	return level_list[level_index] != null
+
+func file_is_level(file_path: String) -> bool:
 	var file_name = file_path.get_file()
 	return file_name.ends_with(".tscn")
 
-## Loads and Begins a new level.[br]
+func load_level(level_index: int) -> void:
+	var level_name = levelname_list[level_index] + ".tscn"
+	level_list[level_index] = load(levels_dir.path_join(level_name))
+
+## Begins a new level.[br]
 ## The [code]level[/code] parameter can be a level [b]Index[/b] ([code]int[/code]) 
 ## or a level [b]Name[/b] ([code]StringName[/code])
 func begin_level(level: Variant) -> void:
@@ -73,7 +79,13 @@ func begin_level(level: Variant) -> void:
 		_print_error("Level '%s' not recognized from directory '%s'" % [level, levels_dir])
 		return
 	
-	var level_scene = level if (level is PackedScene) else level_list.get(level_index)
+	# Load level
+	if not is_level_loaded(level_index):
+		push_warning("Begun level without loading it before. Loading it now. " +
+			"Make sure to load levels before beginning them to avoid loading screens")
+		load_level(level_index)
+	
+	var level_scene = level_list.get(level_index)
 	if not level_scene:
 		_print_error("Level %s not recognized" % level)
 		return

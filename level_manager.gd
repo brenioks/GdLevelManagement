@@ -59,36 +59,31 @@ func file_is_level(file_path: String):
 ## or a level [b]Name[/b] ([code]StringName[/code])
 func begin_level(level: Variant) -> void:
 	var level_index: int
-	# Podemos usar o nome do nível
+	
 	if level is PackedScene:
 		level_index = level_list.find(level)
 	elif level is StringName:
 		level_index = levelname_list.find(level)
-	# Mas também o indice do nível
 	elif level is int:
 		level_index = level
-	# Tipo de nível desconhecido (!int && !StringName)
 	else:
-		_print_error("Level type '%s' should be 'int' or 'StringName'" % type_string(typeof(level)))
+		_print_error("Expected level type int, StringName or PackedScene, but got %s" % type_string(typeof(level)))
 		return
 	if level_index == -1:
 		_print_error("Level '%s' not recognized from directory '%s'" % [level, levels_dir])
 		return
 	
-	# Iniciar nível de verdadde
-	
-	var level_scene = level_list.get(level_index)
+	var level_scene = level if (level is PackedScene) else level_list.get(level_index)
 	if not level_scene:
 		_print_error("Level %s not recognized" % level)
 		return
 	
-	# Descarregar nível anterior
+	# Begin level for real
 	if current_level_node:
 		current_level_node.queue_free()
 	
-	# Carregar nível novo
 	var level_node = level_scene.instantiate()
-	call_deferred("add_child", level_node)
+	add_child.call_deferred(level_node)
 	current_level_index = level_index
 	current_level_node = level_node
 	

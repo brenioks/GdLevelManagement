@@ -1,6 +1,7 @@
-class_name LevelManager extends Node
+class_name LevelManager
+extends Node
 
-@export var start_level: Variant
+@export var start_level: PackedScene
 @export_group("References")
 @export var levels_dir: String = "res://"
 
@@ -54,21 +55,24 @@ func file_is_level(file_path: String):
 	return file_name.ends_with(".tscn")
 
 ## Loads and Begins a new level.[br]
-## The [code]level[/code] parameter can be a level [b]Index[/b] ([code]int[/code]) or a level [b]Name[/b] ([code]StringName[/code])
+## The [code]level[/code] parameter can be a level [b]Index[/b] ([code]int[/code]) 
+## or a level [b]Name[/b] ([code]StringName[/code])
 func begin_level(level: Variant) -> void:
 	var level_index: int
 	# Podemos usar o nome do nível
-	if level is StringName:
+	if level is PackedScene:
+		level_index = level_list.find(level)
+	elif level is StringName:
 		level_index = levelname_list.find(level)
-		if level_index == -1:
-			_print_error("Level '%s' not recognized from directory '%s'" % [level, levels_dir])
-			return
 	# Mas também o indice do nível
 	elif level is int:
 		level_index = level
 	# Tipo de nível desconhecido (!int && !StringName)
 	else:
 		_print_error("Level type '%s' should be 'int' or 'StringName'" % type_string(typeof(level)))
+		return
+	if level_index == -1:
+		_print_error("Level '%s' not recognized from directory '%s'" % [level, levels_dir])
 		return
 	
 	# Iniciar nível de verdadde

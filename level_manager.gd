@@ -65,13 +65,19 @@ func load_level(level_index: int) -> void:
 ## or a level [b]Name[/b] ([code]StringName[/code])
 func begin_level(level: Variant) -> void:
 	var level_index: int
+	var level_name: String
 	
 	if level is PackedScene:
 		level_index = level_list.find(level)
+		if level_index == -1:
+			level_name = level.resource_path.get_file().get_slice(".", 0)
+			level_index = levelname_list.find(level_name)
 	elif level is StringName:
 		level_index = levelname_list.find(level)
+		level_name = level
 	elif level is int:
 		level_index = level
+		level_name = levelname_list[level_index]
 	else:
 		_print_error("Expected level type int, StringName or PackedScene, but got %s" % type_string(typeof(level)))
 		return
@@ -81,7 +87,7 @@ func begin_level(level: Variant) -> void:
 	
 	# Load level
 	if not is_level_loaded(level_index):
-		push_warning("Begun level without loading it before. Loading it now. " +
+		push_warning("Begun level without having it loaded previously. Loading it now. " +
 			"Make sure to load levels before beginning them to avoid loading screens")
 		load_level(level_index)
 	
@@ -100,7 +106,6 @@ func begin_level(level: Variant) -> void:
 	current_level_node = level_node
 	
 	await level_node.ready
-	var level_name = levelname_list[level_index]
 	level_loaded.emit(level_name)
 
 func _print_error(message: String):

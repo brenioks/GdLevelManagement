@@ -42,12 +42,8 @@ func _setup_level_lists() -> void:
 		var scene_name: String = scene_files[i]
 		var level_name: StringName = scene_name.get_file().get_slice('.', 0)
 		levelname_list[i] = level_name
-	# Print a list of levels, showing their index, name and scene ( index  : 'name'  = PackedScene)
-	print("-- Cached levels --")
-	print("index :  name            = PackedScene")
-	for i in range(level_list.size()):
-		print("  %-*s: '%s'  = %s" % [4, i, levelname_list[i], level_list[i]])
-	print("-- end of cached levels --")
+	
+	print(_get_text_level_table())
 
 func is_level_loaded(level_index: int) -> bool:
 	return level_list[level_index] != null
@@ -115,6 +111,20 @@ func _print_error(message: String):
 		caller = stack[3]
 	var line_code = FileAccess.get_file_as_string(caller.source).split("\n")[caller.line-1].strip_edges()
 	printerr(message + "\n At: %s:%d:%s() -    %s" % [caller.source.get_file(), caller.line, caller.function, line_code])
+
+func _get_text_level_table() -> String:
+	var longest_level_name: String = levelname_list.reduce(func(longest: String, _name: String): 
+		return longest if longest.length() > _name.length() else _name
+	, "")
+	print(longest_level_name)
+	# Print a list of levels, showing their index, name and scene ( index  : 'name'  = PackedScene)
+	var text_table := "-- Cached levels --\n"
+	text_table += "index : name%s    = PackedScene\n" % " ".repeat(longest_level_name.length() - 4)
+	for i in range(level_list.size()):
+		var level_name = levelname_list[i]
+		text_table += "  %-*s: '%s'%s  = %s\n" % [4, i, level_name, " ".repeat(longest_level_name.length() - level_name.length()), level_list[i]]
+	text_table += "-- end of cached levels --\n"
+	return text_table
 
 
 func _on_level_ended() -> void:

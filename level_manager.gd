@@ -116,7 +116,7 @@ func begin_level(level: Variant) -> void:
 	if not player_spawner:
 		level_loaded.emit(level_name)
 		return
-	World.player.global_position = player_spawner.global_position
+	World.get_player().global_position = player_spawner.global_position
 	player_spawner.hide()
 	player_spawner.queue_free()
 	

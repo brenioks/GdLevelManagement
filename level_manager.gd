@@ -11,10 +11,12 @@ var current_level_index: int = -1
 var current_level_name: StringName
 var current_level_node: Node2D
 
-signal level_loaded(level_name: StringName)
-signal level_ended
+signal level_loaded(level_name: StringName, level_index: int)
+signal level_begun(level_name: StringName, level_index: int)
+signal level_ended(level_name: StringName, level_index: int)
 
 var debug_label: Label
+var _first_level := true
 
 
 func _ready() -> void:
@@ -56,6 +58,7 @@ func load_level(level_index: int) -> void:
 	var level_name = levelname_list[level_index] + ".tscn"
 	level_list[level_index] = load(levels_dir.path_join(level_name))
 	print_text_level_table()
+	level_loaded.emit(level_name, level_index)
 
 ## Begins a new level.[br]
 ## The [code]level[/code] parameter can be a level [b]Index[/b] ([code]int[/code]) 
@@ -82,11 +85,18 @@ func begin_level(level: Variant) -> void:
 		_print_error("Level '%s' not recognized from directory '%s'" % [level, levels_dir])
 		return
 	
+	if not _first_level:
+		level_ended.emit(level_name, level_index)
+		await get_tree().process_frame
+	else:
+		_first_level = false
+	
 	# Load level
 	if not is_level_loaded(level_index):
 		push_warning("Begun level without having it loaded previously. Loading it now. " +
 			"Make sure to load levels before beginning them to avoid loading screens")
 		load_level(level_index)
+	await level_loaded
 	
 	var level_scene = level_list.get(level_index)
 	if not level_scene:
@@ -108,7 +118,7 @@ func begin_level(level: Variant) -> void:
 	# Teleport Player to spawn
 	var player_spawner: Marker2D = current_level_node.get_node("PlayerSpawner")
 	if not player_spawner and not World.get_player():
-		level_loaded.emit(level_name)
+		level_begun.emit(level_name, level_index)
 		return
 	World.get_player().global_position = player_spawner.global_position
 	player_spawner.hide()

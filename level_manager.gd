@@ -138,6 +138,7 @@ func begin_level(level: Variant) -> void:
 	player_spawner.hide()
 	player_spawner.queue_free()
 	
+	level_begun.emit(level_name, level_index)
 
 func _print_error(message: String):
 	var stack = get_stack()

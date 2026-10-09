@@ -141,7 +141,7 @@ func begin_level(level: Variant) -> void:
 	await level_node.ready
 	# Teleport Player to spawn
 	var player_spawner: Marker2D = current_level_node.get_node("PlayerSpawner")
-	if not player_spawner and not World.get_player():
+	if not World.get_player() or not player_spawner:
 		level_begun.emit(level_name, level_index)
 		return
 	World.get_player().global_position = player_spawner.global_position

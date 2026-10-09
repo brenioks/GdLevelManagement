@@ -64,17 +64,20 @@ func load_level_async(level_index: int) -> void:
 	var level_name = levelname_list[level_index] + ".tscn"
 	var scene_path = levels_dir.path_join(level_name)
 	
-	var progress: Array
+	var progress: Array = [0.0]
 	ResourceLoader.load_threaded_request(scene_path)
 	while ResourceLoader.load_threaded_get_status(scene_path, progress) \
 			== ResourceLoader.THREAD_LOAD_IN_PROGRESS:
-		print("Loading level %s, progress: %d%" % [level_name, progress[0]])
+		print("Loading level %s, progress: %s" % [level_name, progress[0]])
 		await get_tree().process_frame 
 	
 	if ResourceLoader.load_threaded_get_status(scene_path) \
 			== ResourceLoader.THREAD_LOAD_LOADED:
 		level_list[level_index] = ResourceLoader.load_threaded_get(scene_path)
 		level_loaded.emit(level_index, level_name)
+		print_text_level_table()
+	else:
+		push_error("Failed to load level '%s' asynchronously" % [level_name])
 
 func unload_level(level_index: int) -> void:
 	var level_name = levelname_list[level_index] + ".tscn"

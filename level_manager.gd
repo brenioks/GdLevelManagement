@@ -21,9 +21,9 @@ var _first_level := true
 
 
 func _ready() -> void:
-	# Erase anything that is inside this node for some reason
-	for child in get_children():
-		child.queue_free()
+	if get_child_count() > 0:
+		push_warning("Children are inside the LevelManager! Please refrain " +
+			"from having any children inside it, unless it's super necessary")
 	
 	debug_label = Label.new()
 	debug_label.z_index = 1

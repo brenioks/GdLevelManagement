@@ -2,6 +2,7 @@ class_name World
 extends Node
 
 static var _instance: World = null
+static var _player: Player = null
 
 
 func _ready() -> void:

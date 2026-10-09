@@ -18,12 +18,6 @@ var debug_label: Label
 
 
 func _ready() -> void:
-	if not World.player:
-		push_error("LevelManager: reference to Player (from World) not found!")
-		get_tree().quit()
-		breakpoint
-		return
-	
 	# Erase anything that is inside this node for some reason
 	for child in get_children():
 		child.queue_free()
@@ -113,7 +107,7 @@ func begin_level(level: Variant) -> void:
 	await level_node.ready
 	# Teleport Player to spawn
 	var player_spawner: Marker2D = current_level_node.get_node("PlayerSpawner")
-	if not player_spawner:
+	if not player_spawner and not World.get_player():
 		level_loaded.emit(level_name)
 		return
 	World.get_player().global_position = player_spawner.global_position

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://kyym3jeevgs1"]
 
 [ext_resource type="Texture2D" uid="uid://x1ni4tv64fwi" path="res://icon.svg" id="1_gtdf4"]
+[ext_resource type="PackedScene" uid="uid://bpg1x75c4wr8i" path="res://player_spawner.tscn" id="2_36tc4"]
 
 [sub_resource type="GDScript" id="GDScript_gtdf4"]
 resource_name = "godot_sorridente"
@@ -53,5 +54,8 @@ offset_right = 224.0
 offset_bottom = 258.0
 scale = Vector2(1.7162648, 1.3532768)
 text = "Level Uno"
+
+[node name="PlayerSpawner" parent="." unique_id=961085723 instance=ExtResource("2_36tc4")]
+position = Vector2(253, 377)
 
 [connection signal="pressed" from="GodotSorridente/Button" to="GodotSorridente" method="_on_button_pressed"]

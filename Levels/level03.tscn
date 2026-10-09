@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://lkb8at0nv75h"]
 
 [ext_resource type="Texture2D" uid="uid://x1ni4tv64fwi" path="res://icon.svg" id="1_2u3od"]
+[ext_resource type="PackedScene" uid="uid://bpg1x75c4wr8i" path="res://player_spawner.tscn" id="2_h8gll"]
 
 [node name="Level02" type="Node2D" unique_id=1896392317]
 
@@ -18,3 +19,6 @@ position = Vector2(727.00006, 194.00002)
 rotation = 0.15962744
 color = Color(0, 0, 0, 1)
 polygon = PackedVector2Array(11.321289, -55.505196, -40.076904, -29.92308, -30.076904, 1.0769196, -15.319763, 5.5050583, -2.0769043, 47.07692, 19.923096, 55.07692, 73.166626, 58.10888, 56.85956, 63.772926, 15.923096, 65.07692, -11.076904, 50.07692, -20.076904, 16.07692, -38.076904, 7.0769196, -49.076904, -32.92308, 4.9230957, -63.92308)
+
+[node name="PlayerSpawner" parent="." unique_id=961085723 instance=ExtResource("2_h8gll")]
+position = Vector2(988, 504)

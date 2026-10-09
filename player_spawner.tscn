@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bpg1x75c4wr8i"]
+
+[ext_resource type="Texture2D" uid="uid://x1ni4tv64fwi" path="res://icon.svg" id="1_lfgd7"]
+
+[node name="PlayerSpawner" type="Marker2D" unique_id=961085723]
+
+[node name="Icon" type="Sprite2D" parent="." unique_id=1820401514]
+modulate = Color(0, 1, 1, 0.5019608)
+texture = ExtResource("1_lfgd7")

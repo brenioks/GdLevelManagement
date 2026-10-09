@@ -9,7 +9,7 @@ var level_list: Array[PackedScene]
 var levelname_list: Array[String]
 var current_level_index: int = -1
 var current_level_name: StringName
-var current_level_node: Node
+var current_level_node: Node2D
 
 signal level_loaded(level_name: StringName)
 signal level_ended
@@ -101,6 +101,8 @@ func begin_level(level: Variant) -> void:
 	
 	# Begin level for real
 	if current_level_node:
+		current_level_node.hide()
+		remove_child(current_level_node)
 		current_level_node.queue_free()
 	
 	var level_node = level_scene.instantiate()
@@ -109,6 +111,15 @@ func begin_level(level: Variant) -> void:
 	current_level_node = level_node
 	
 	await level_node.ready
+	# Teleport Player to spawn
+	var player_spawner: Marker2D = current_level_node.get_node("PlayerSpawner")
+	if not player_spawner:
+		level_loaded.emit(level_name)
+		return
+	World.player.global_position = player_spawner.global_position
+	player_spawner.hide()
+	player_spawner.queue_free()
+	
 	level_loaded.emit(level_name)
 
 func print_text_level_table():

@@ -10,7 +10,7 @@ func _ready() -> void:
 	level_manager.level_loaded.connect(_on_level_changed)
 	level_manager.level_unloaded.connect(_on_level_changed)
 
-func _on_level_changed(a, b):
+func _on_level_changed(_a, _b):
 	var level_table = get_text_level_table()
 	print(level_table)
 	label.text = level_table

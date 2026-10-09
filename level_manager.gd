@@ -16,7 +16,6 @@ signal level_unloaded(level_name: StringName, level_index: int)
 signal level_begun(level_name: StringName, level_index: int)
 signal level_ended(level_name: StringName, level_index: int)
 
-var debug_label: Label
 var _first_level := true
 
 
@@ -24,10 +23,6 @@ func _ready() -> void:
 	if get_child_count() > 0:
 		push_warning("Children are inside the LevelManager! Please refrain " +
 			"from having any children inside it, unless it's super necessary")
-	
-	debug_label = Label.new()
-	debug_label.z_index = 1
-	add_child(debug_label)
 	
 	_setup_level_lists()
 
@@ -42,8 +37,6 @@ func _setup_level_lists() -> void:
 		var scene_name: String = scene_files[i]
 		var level_name: StringName = scene_name.get_file().get_slice('.', 0)
 		levelname_list[i] = level_name
-	
-	print_text_level_table()
 
 func is_level_loaded(level_index: int) -> bool:
 	return level_list[level_index] != null
@@ -57,7 +50,6 @@ func file_is_level(file_path: String) -> bool:
 func load_level(level_index: int) -> void:
 	var level_name = levelname_list[level_index] + ".tscn"
 	level_list[level_index] = load(levels_dir.path_join(level_name))
-	print_text_level_table()
 	level_loaded.emit(level_name, level_index)
 
 func load_level_async(level_index: int) -> void:
@@ -75,14 +67,12 @@ func load_level_async(level_index: int) -> void:
 			== ResourceLoader.THREAD_LOAD_LOADED:
 		level_list[level_index] = ResourceLoader.load_threaded_get(scene_path)
 		level_loaded.emit(level_index, level_name)
-		print_text_level_table()
 	else:
 		push_error("Failed to load level '%s' asynchronously" % [level_name])
 
 func unload_level(level_index: int) -> void:
 	var level_name = levelname_list[level_index] + ".tscn"
 	level_list[level_index] = null
-	print_text_level_table()
 	level_unloaded.emit(level_name, level_index)
 
 ## Begins a new level.[br]
@@ -148,24 +138,6 @@ func begin_level(level: Variant) -> void:
 	player_spawner.hide()
 	player_spawner.queue_free()
 	
-	level_loaded.emit(level_name)
-
-func print_text_level_table():
-	print(_get_text_level_table())
-	debug_label.text = _get_text_level_table()
-
-func _get_text_level_table() -> String:
-	var longest_level_name: String = levelname_list.reduce(func(longest: String, _name: String): 
-		return longest if longest.length() > _name.length() else _name
-	, "")
-	# Print a list of levels, showing their index, name and scene ( index  : 'name'  = PackedScene)
-	var text_table := "-- Cached levels --\n"
-	text_table += "index : name%s    = PackedScene\n" % " ".repeat(longest_level_name.length() - 4)
-	for i in range(level_list.size()):
-		var level_name = levelname_list[i]
-		text_table += "  %-*s: '%s'%s  = %s\n" % [4, i, level_name, " ".repeat(longest_level_name.length() - level_name.length()), level_list[i]]
-	text_table += "-- end of cached levels --\n"
-	return text_table
 
 func _print_error(message: String):
 	var stack = get_stack()

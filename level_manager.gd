@@ -32,7 +32,6 @@ func _ready() -> void:
 	_setup_level_lists()
 	
 	begin_level(start_level)
-	level_ended.connect(_on_level_ended)
 
 func _setup_level_lists() -> void:
 	var scene_files: Array = ResourceLoader.list_directory(levels_dir)
@@ -156,7 +155,3 @@ func _print_error(message: String):
 		caller = stack[3]
 	var line_code = FileAccess.get_file_as_string(caller.source).split("\n")[caller.line-1].strip_edges()
 	printerr(message + "\n At: %s:%d:%s() -    %s" % [caller.source.get_file(), caller.line, caller.function, line_code])
-
-
-func _on_level_ended() -> void:
-	pass

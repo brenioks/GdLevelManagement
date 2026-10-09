@@ -12,6 +12,7 @@ var current_level_name: StringName
 var current_level_node: Node2D
 
 signal level_loaded(level_name: StringName, level_index: int)
+signal level_unloaded(level_name: StringName, level_index: int)
 signal level_begun(level_name: StringName, level_index: int)
 signal level_ended(level_name: StringName, level_index: int)
 
@@ -60,6 +61,12 @@ func load_level(level_index: int) -> void:
 	print_text_level_table()
 	level_loaded.emit(level_name, level_index)
 
+func unload_level(level_index: int) -> void:
+	var level_name = levelname_list[level_index] + ".tscn"
+	level_list[level_index] = null
+	print_text_level_table()
+	level_unloaded.emit(level_name, level_index)
+
 ## Begins a new level.[br]
 ## The [code]level[/code] parameter can be a level [b]Index[/b] ([code]int[/code]) 
 ## or a level [b]Name[/b] ([code]StringName[/code])
@@ -96,7 +103,6 @@ func begin_level(level: Variant) -> void:
 		push_warning("Begun level without having it loaded previously. Loading it now. " +
 			"Make sure to load levels before beginning them to avoid loading screens")
 		load_level(level_index)
-	await level_loaded
 	
 	var level_scene = level_list.get(level_index)
 	if not level_scene:

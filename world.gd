@@ -46,8 +46,7 @@ static func get_current_level() -> int:
 	return World.get_manager("LevelManager").current_level_index
 
 static func begin_level(level) -> void:
-	var level_manager = World.get_manager("LevelManager")
-	level_manager.level_ended.emit()
+	var level_manager: LevelManager = World.get_manager("LevelManager")
 	# NOTE: Provavelmente fazer algo tipo uma transição aqui
 	level_manager.begin_level(level)
 

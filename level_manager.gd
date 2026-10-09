@@ -14,6 +14,8 @@ var current_level_node: Node
 signal level_loaded(level_name: StringName)
 signal level_ended
 
+var debug_label: Label
+
 
 func _ready() -> void:
 	if not World.player:
@@ -22,11 +24,15 @@ func _ready() -> void:
 		breakpoint
 		return
 	
-	_setup_level_lists()
-	
 	# Erase anything that is inside this node for some reason
 	for child in get_children():
 		child.queue_free()
+	
+	debug_label = Label.new()
+	debug_label.z_index = 1
+	add_child(debug_label)
+	
+	_setup_level_lists()
 	
 	begin_level(start_level)
 	level_ended.connect(_on_level_ended)
@@ -43,7 +49,7 @@ func _setup_level_lists() -> void:
 		var level_name: StringName = scene_name.get_file().get_slice('.', 0)
 		levelname_list[i] = level_name
 	
-	print(_get_text_level_table())
+	print_text_level_table()
 
 func is_level_loaded(level_index: int) -> bool:
 	return level_list[level_index] != null
@@ -55,6 +61,7 @@ func file_is_level(file_path: String) -> bool:
 func load_level(level_index: int) -> void:
 	var level_name = levelname_list[level_index] + ".tscn"
 	level_list[level_index] = load(levels_dir.path_join(level_name))
+	print_text_level_table()
 
 ## Begins a new level.[br]
 ## The [code]level[/code] parameter can be a level [b]Index[/b] ([code]int[/code]) 
@@ -104,19 +111,14 @@ func begin_level(level: Variant) -> void:
 	await level_node.ready
 	level_loaded.emit(level_name)
 
-func _print_error(message: String):
-	var stack = get_stack()
-	var caller = stack[2]
-	if stack.size() == 4:
-		caller = stack[3]
-	var line_code = FileAccess.get_file_as_string(caller.source).split("\n")[caller.line-1].strip_edges()
-	printerr(message + "\n At: %s:%d:%s() -    %s" % [caller.source.get_file(), caller.line, caller.function, line_code])
+func print_text_level_table():
+	print(_get_text_level_table())
+	debug_label.text = _get_text_level_table()
 
 func _get_text_level_table() -> String:
 	var longest_level_name: String = levelname_list.reduce(func(longest: String, _name: String): 
 		return longest if longest.length() > _name.length() else _name
 	, "")
-	print(longest_level_name)
 	# Print a list of levels, showing their index, name and scene ( index  : 'name'  = PackedScene)
 	var text_table := "-- Cached levels --\n"
 	text_table += "index : name%s    = PackedScene\n" % " ".repeat(longest_level_name.length() - 4)
@@ -125,6 +127,14 @@ func _get_text_level_table() -> String:
 		text_table += "  %-*s: '%s'%s  = %s\n" % [4, i, level_name, " ".repeat(longest_level_name.length() - level_name.length()), level_list[i]]
 	text_table += "-- end of cached levels --\n"
 	return text_table
+
+func _print_error(message: String):
+	var stack = get_stack()
+	var caller = stack[2]
+	if stack.size() == 4:
+		caller = stack[3]
+	var line_code = FileAccess.get_file_as_string(caller.source).split("\n")[caller.line-1].strip_edges()
+	printerr(message + "\n At: %s:%d:%s() -    %s" % [caller.source.get_file(), caller.line, caller.function, line_code])
 
 
 func _on_level_ended() -> void:

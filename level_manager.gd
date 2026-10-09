@@ -30,8 +30,6 @@ func _ready() -> void:
 	add_child(debug_label)
 	
 	_setup_level_lists()
-	
-	begin_level(start_level)
 
 func _setup_level_lists() -> void:
 	var scene_files: Array = ResourceLoader.list_directory(levels_dir)

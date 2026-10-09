@@ -18,6 +18,8 @@ static var _player: Player = null
 
 func _ready() -> void:
 	World._instance = self
+	await wait_for_player()
+	next_level()
 
 
 static func get_manager(manager_name: String):
@@ -36,8 +38,7 @@ static func wait_for_player():
 	var timer = _instance.get_tree().create_timer(1)
 	while timer.time_left > 0 and player == null:
 		player = _instance.get_node_or_null("Player")
-		await _instance.get_tree().create_timer(.1).timeout
-	await player.ready
+		await _instance.get_tree().process_frame
 	return player
 
 

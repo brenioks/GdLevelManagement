@@ -54,11 +54,29 @@ func file_is_level(file_path: String) -> bool:
 	var file_name = file_path.get_file()
 	return file_name.ends_with(".tscn")
 
+## Loads a level by it's index synchronously. Please refer to using 
+## [code]load_level_async()[/code] for better loading and design
 func load_level(level_index: int) -> void:
 	var level_name = levelname_list[level_index] + ".tscn"
 	level_list[level_index] = load(levels_dir.path_join(level_name))
 	print_text_level_table()
 	level_loaded.emit(level_name, level_index)
+
+func load_level_async(level_index: int) -> void:
+	var level_name = levelname_list[level_index] + ".tscn"
+	var scene_path = levels_dir.path_join(level_name)
+	
+	var progress: Array
+	ResourceLoader.load_threaded_request(scene_path)
+	while ResourceLoader.load_threaded_get_status(scene_path, progress) \
+			== ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+		print("Loading level %s, progress: %d%" % [level_name, progress[0]])
+		await get_tree().process_frame 
+	
+	if ResourceLoader.load_threaded_get_status(scene_path) \
+			== ResourceLoader.THREAD_LOAD_LOADED:
+		level_list[level_index] = ResourceLoader.load_threaded_get(scene_path)
+		level_loaded.emit(level_index, level_name)
 
 func unload_level(level_index: int) -> void:
 	var level_name = levelname_list[level_index] + ".tscn"

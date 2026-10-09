@@ -46,8 +46,9 @@ static func wait_for_player():
 static func get_current_level() -> int:
 	return World.get_manager("LevelManager").current_level_index
 
-static func begin_level(level) -> void:
+static func begin_level(level: int) -> void:
 	var level_manager: LevelManager = World.get_manager("LevelManager")
+	await level_manager.load_level_async(level)
 	# NOTE: Provavelmente fazer algo tipo uma transição aqui
 	level_manager.begin_level(level)
 

@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://x1ni4tv64fwi" path="res://icon.svg" id="1_2u3od"]
 [ext_resource type="PackedScene" uid="uid://bpg1x75c4wr8i" path="res://player_spawner.tscn" id="2_h8gll"]
 
-[node name="Level02" type="Node2D" unique_id=1896392317]
+[node name="Level03" type="Node2D" unique_id=1896392317]
 
 [node name="Icon" type="Sprite2D" parent="." unique_id=1532248846]
 position = Vector2(479, 239)

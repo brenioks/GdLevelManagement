@@ -9,8 +9,8 @@ script/source = "extends Sprite2D
 
 
 func _on_button_pressed() -> void:
-	#World.begin_level(null)	# Was testing the error printing
 	World.next_level()
+	Demo.unload_current_level()
 "
 
 [node name="Level01" type="Node2D" unique_id=171565592]
